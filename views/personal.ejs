@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>个人中心</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!--width=device-width, initial-scale=1适当的绘制和触屏缩放;user-scalable=no禁用缩放-->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <!--bootstrap官方样式-->
+    <link rel="stylesheet" href="/css/normalize.css">
+
+    <link rel="stylesheet" href="/vendor/bootstrap-switch/bootstrap-switch.min.css">
+
+    <!--强跨浏览器表现的一致性css 重置样式-->
+    <link rel="stylesheet" href="/css/main.css">
+
+    <!--自用样式-->
+</head>
+
+<body>
+
+<%- include('header') %>
+
+<%- include('nav') %>
+
+<!-- 主体 -->
+<section class="container">
+    <div class="tab" role="tabpanel">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs col-md-1" role="tablist">
+            <li role="presentation" class="active"><a href="#Section1" aria-controls="" role="tab" data-toggle="tab"><i
+                            class="glyphicon glyphicon-file"></i>基本资料</a></li>
+            <li role="presentation"><a href="#Section2" aria-controls="" role="tab" data-toggle="tab"><i
+                            class="glyphicon glyphicon-book"></i>文章管理</a></li>
+            <li role="presentation"><a href="#Section3" aria-controls="" role="tab" data-toggle="tab"><i
+                            class="glyphicon glyphicon-send"></i>分类管理</a></li>
+            <!--<li role="presentation"><a href="#Section4" aria-controls="" role="tab" data-toggle="tab"><i-->
+                            <!--class="glyphicon glyphicon-floppy-save"></i>草稿箱</a></li>-->
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content col-md-11 tabs">
+            <!-- 基本资料 -->
+            <%- include('personal/user') %>
+
+            <!-- 文章管理 -->
+            <%- include('personal/article') %>
+
+            <!-- 分类管理 -->
+            <%- include('personal/category') %>
+
+            <!--&lt;!&ndash; 草稿箱 &ndash;&gt;-->
+            <!--<div role="tabpanel" class="tab-pane fade" id="Section4"> 保持</div>-->
+        </div>
+    </div>
+</section>
+
+<%- include('footer') %>
+
+<script src="/js/jquery.min.js"></script><!--jquery-->
+<script src="/js/bootstrap.min.js"></script><!--bootstrap官方js-->
+<script type="text/javascript" src="/js/jquery.basictable.min.js"></script>
+<script src="/vendor/layer/layer.js"></script><!--bootstrap官方js-->
+<script src="/vendor/bootstrap-switch/bootstrap-switch.min.js"></script><!--bootstrap官方js-->
+<script src="http://unpkg.com/wangeditor/release/wangEditor.min.js"></script> <!--编辑器-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        //表格适应初始化
+        $('#table').basictable();
+    });
+</script>
+<script type="text/javascript">
+
+    /**
+     * 初始化编辑器
+     */
+    var E = window.wangEditor
+    var editor = new E('#contents-div')
+    editor.create()
+
+    //搜索筛选下拉
+    $(document).ready(function () {
+            getCategoryList();
+            getArticleList(1, '', 0);
+        }
+    );
+
+    //图片上传预览
+    function preview(file) {
+        var prevDiv = document.getElementById('preview');
+        if (file.files && file.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+                var filename = file.value;
+                var index = filename.lastIndexOf('.');
+                $("#article-suffix").val(filename.substring(index));
+                $("#article-img").val(evt.target.result);
+                prevDiv.innerHTML = '<img src="' + evt.target.result + '" />';
+            }
+            reader.readAsDataURL(file.files[0]);
+        } else {
+            prevDiv.innerHTML = '<div class="img" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>';
+        }
+    }
+
+    //图片上传预览
+    function preview2(file) {
+        var prevDiv = document.getElementById('preview2');
+        if (file.files && file.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+                var filename = file.value;
+                var index = filename.lastIndexOf('.');
+                $("#user-suffix").val(filename.substring(index));
+                $("#user-img").val(evt.target.result);
+                prevDiv.innerHTML = '<img src="' + evt.target.result + '" />';
+            }
+            reader.readAsDataURL(file.files[0]);
+        } else {
+            prevDiv.innerHTML = '<div class="img" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>';
+        }
+    }
+
+    //---------------------------- 用户信息 --------------------------------
+
+    /**
+     * 更新用户信息
+     */
+    function update() {
+        var nickname = $("#nickname").val();
+        var signature = $("#signature").val();
+        var position = $("#position").val();
+        var other = $("#other").val();
+        var img = $("#user-img").val();
+        var suffix = $("#user-suffix").val();
+        $.post('/users/personal', {
+            nickname: nickname,
+            signature: signature,
+            position: position,
+            other: other,
+            img: img,
+            suffix: suffix
+        }, function (data) {
+            if (data.status == 1) {
+                layer.msg(data.msg);
+            } else {
+                layer.msg(data.msg);
+            }
+        });
+    }
+
+    /**
+     * 修改密码
+     */
+    function updatePwd() {
+        var old_password = $("#old-password").val();
+        var new_password = $("#new-password").val();
+        var confirm_password = $("#confirm-password").val();
+        $.post('/users/password', {
+            old_password: old_password,
+            new_password: new_password,
+            confirm_password: confirm_password
+        }, function (data) {
+            if (data.status == 1) {
+                layer.msg(data.msg);
+            } else {
+                layer.msg(data.msg);
+            }
+        });
+    }
+
+    //---------------------------- 栏目管理 --------------------------------
+
+    /**
+     * 获取栏目列表
+     */
+    function getCategoryList() {
+        $.get('/category/index', function (data) {
+                if (data.status == 1) {
+                    let categoryList = data.result;
+                    var html = "";
+                    for (var i = 0; i < categoryList.length; i++) {
+                        var category = categoryList[i];
+                        html += '<tr>';
+                        html += '<td style="text-align:left;">' + category.name + '</td>';
+                        html += '<td>' + category.path + '</td>';
+                        html += '<td>' + category.sort + '</td>';
+                        html += '<td>' + category.template + '</td>';
+                        if (category.is_nav == 1) {
+                            html += '<td><input type="checkbox" name="is_nav" checked value="' + category._id + '"></td>';
+                        } else {
+                            html += '<td><input type="checkbox" name="is_nav" value="' + category._id + '"></td>';
+                        }
+                        if (category.is_sys == 1) {
+                            html += '<td><span style="color: red">是</span></td>';
+                        } else {
+                            html += '<td><span style="color: green">否</span></td>';
+                        }
+                        if (category.is_sys == 1) {
+                            html += '<td>' +
+                                '<span  style="color: #8D8D8D" class="btn-edit">编辑</span>' +
+                                '<span  style="color: #8D8D8D" class="btn-delete">删除</span>' +
+                                '</td>';
+                        } else {
+                            html += '<td>' +
+                                '<a href="javascript:;" class="btn-edit" onclick="editCategory(\'' + category._id + '\');">编辑</a>' +
+                                '<a href="javascript:;" class="btn-delete" onclick="delCategory(\'' + category._id + '\');">删除</a>' +
+                                '</td>';
+                        }
+                        html += '</tr>';
+                        if (category.category.length > 0) {
+                            for (var j = 0; j < category.category.length; j++) {
+                                var subCategory = category.category[j];
+                                html += '<tr>';
+                                html += '<td style="text-align:left;color:red">&nbsp;&nbsp;&nbsp;&nbsp;|--&nbsp;' + subCategory.name + '</td>';
+                                html += '<td style="color:red">' + subCategory.path + '</td>';
+                                html += '<td style="color:red">' + subCategory.sort + '</td>';
+                                html += '<td style="color:red">' + subCategory.template + '</td>';
+                                if (subCategory.is_nav == 1) {
+                                    html += '<td><input type="checkbox" name="is_nav" checked></td>';
+                                } else {
+                                    html += '<td><input type="checkbox" name="is_nav"></td>';
+                                }
+                                if (subCategory.is_sys == 1) {
+                                    html += '<td><span style="color: red">是</span></td>';
+                                } else {
+                                    html += '<td><span style="color: green">否</span></td>';
+                                }
+                                if (subCategory.is_sys == 1) {
+                                    html += '<td>' +
+                                        '<span  style="color: #8D8D8D" class="btn-edit">编辑</span>' +
+                                        '<span  style="color: #8D8D8D" class="btn-delete">删除</span>' +
+                                        '</td>';
+                                } else {
+                                    html += '<td>' +
+                                        '<a href="javascript:;" class="btn-edit" onclick="editCategory(\'' + subCategory._id + '\');">编辑</a>' +
+                                        '<a href="javascript:;" class="btn-delete" onclick="delCategory(\'' + subCategory._id + '\');">删除</a>' +
+                                        '</td>';
+                                }
+                                html += '</tr>';
+                            }
+                        }
+                    }
+                    $('#categoryList').html(html);
+                    $("[name='is_nav']").bootstrapSwitch({
+                        onText: "是",
+                        offText: "否",
+                        onColor: "success",
+                        offColor: "danger",
+                        size: "small",
+                    });
+                    $("[name='is_nav']").on('switchChange.bootstrapSwitch', function (event, state) {
+                        var id = event.target.value;
+                        var is_nav = state == true ? 1 : 0;
+                        $.get('/category/is_nav/' + id + '/' + is_nav, function (data) {
+                            layer.msg(data.msg);
+                        });
+                    });
+                }
+            }
+        );
+    }
+
+    /**
+     * 添加栏目
+     */
+    function addCategory() {
+        $("#id").val('');
+        $("#name").val('');
+        $("#path").val('');
+        $("#pid").val('');
+        $("#sort").val(100);
+        $("#is_nav").val(1);
+        $("#template").val('');
+        $("#categoryModal").modal('show');
+    }
+
+    /**
+     * 编辑栏目
+     */
+    function editCategory(id) {
+        $.get('/category/' + id, function (data) {
+            if (data.status == 1) {
+                var category = data.result;
+                $("#id").val(category._id);
+                $("#name").val(category.name);
+                $("#path").val(category.path);
+                $("#pid").val(category.pid);
+                $("#sort").val(category.sort);
+                $("#is_nav").val(category.is_nav);
+                $("#template").val(category.template);
+                $("#categoryModal").modal('show');
+            }
+        });
+    }
+
+    /**
+     * 保存栏目
+     */
+    function saveCategory() {
+        var id = $("#id").val();
+        var name = $("#name").val();
+        var path = $("#path").val();
+        var pid = $("#pid").val();
+        var sort = $("#sort").val();
+        var is_nav = $("#is_nav").val();
+        var template = $("#template").val();
+        var data = {
+            name: name,
+            path: path,
+            pid: pid,
+            sort: sort,
+            is_nav: is_nav,
+            template: template
+        }
+        if (id) {
+            $.post('/category/update/' + id, data, function (data) {
+                if (data.status == 1) {
+                    $("#categoryModal").modal('hide');
+                    layer.msg(data.msg);
+                    getCategoryList();
+                } else {
+                    layer.msg(data.msg);
+                }
+            });
+        } else {
+            $.post('/category/save', data, function (data) {
+                if (data.status == 1) {
+                    $("#categoryModal").modal('hide');
+                    layer.msg(data.msg);
+                    getCategoryList();
+                } else {
+                    layer.msg(data.msg);
+                }
+            });
+        }
+    }
+
+    /**
+     * 删除栏目
+     */
+    function delCategory(id) {
+        var c = layer.confirm('是否删除？', {
+            btn: ['是', '否'] //按钮
+        }, function () {
+            layer.close(c);
+            $.get('/category/delete/' + id, function (data) {
+                getCategoryList();
+            });
+        }, function () {
+        });
+    }
+
+    //---------------------------- 文章管理 --------------------------------
+
+    var page = 1;
+    var keyword = '';
+    var is_jing = 0;
+
+    /**
+     * 获取文章列表
+     */
+    function getArticleList() {
+        $.get('/article/index', {page: page, key: keyword, is_jing: is_jing}, function (data) {
+            if (data.status == 1) {
+                var articleList = data.result.list;
+                var html = '';
+                for (var i = 0; i < articleList.length; i++) {
+                    var article = articleList[i];
+                    html += '<li class="col-md-4">';
+                    html += '<div class="excerpt-minic">';
+                    html += '<div class="manage-list-box1">';
+                    html += '<img src="/uploads/' + article.img + '" class="img-responsive">';
+                    html += '<h3><a href="#">' + article.title + '</a></h3>';
+                    html += '<p>' + article.contents + '</p>';
+                    html += '</div>';
+                    html += '<div class="cat">';
+                    html += '<span>' + article.create_at + '</span>';
+                    html += '<span class="fr"><i class="glyphicon glyphicon-pencil"></i><a href="javasctipt:;" onclick="editArticle(\'' + article._id + '\')">编辑</a></span>';
+                    html += '<span class="fr"><i class="glyphicon glyphicon-trash"></i><a href="javasctipt:;" onclick="delArticle(\'' + article._id + '\')">删除</a></span>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</li>';
+                }
+                $("#articleList").html(html);
+                if (data.result.totalPage > 1) {
+                    var pageHtml = '';
+                    if (page > 1) {
+                        pageHtml += '<li><a href="javascript:;" onclick="setPage(' + (parseInt(data.result.page) - 1) + ')">&laquo;</a></li>';
+                    } else {
+                        pageHtml += '<li class="disabled"><a href="javascript:;">&laquo;</a></li>';
+                    }
+                    for (var p = 1; p <= data.result.totalPage; p++) {
+                        if (data.result.page == p) {
+                            pageHtml += ' <li class="active"><a href="javascript:;" onclick="setPage(' + p + ')">' + p + '</a></li>';
+                        } else {
+                            pageHtml += ' <li><a href="javascript:;" onclick="setPage(' + p + ')">' + p + '</a></li>';
+                        }
+                    }
+                    if (page < data.result.totalPage) {
+                        pageHtml += '<li><a href="javascript:;" onclick="setPage(' + (parseInt(data.result.page) + 1) + ')">&raquo;</a></li>';
+                    } else {
+                        pageHtml += '<li class="disabled"><a href="javascript:;">&raquo;</a></li>';
+
+                    }
+                    $("#page").html(pageHtml);
+                } else {
+                    $("#page").html('');
+                }
+            }
+        });
+    }
+
+    /**
+     * 精选
+     */
+    function jing(e) {
+        if ($(e).is(":checked")) {
+            is_jing = 1;
+        } else {
+            is_jing = 0;
+        }
+        getArticleList();
+    }
+
+    /**
+     * 设置页码
+     * @param p
+     */
+    function setPage(p) {
+        page = p;
+        getArticleList();
+    }
+
+    /**
+     * 设置关键字
+     */
+    function setKeyword() {
+        keyword = $('#keyword').val();
+        getArticleList();
+    }
+
+    /**
+     * 删除文章
+     * @param id
+     */
+    function delArticle(id) {
+        var c = layer.confirm('是否删除？', {
+            btn: ['是', '否'] //按钮
+        }, function () {
+            layer.close(c);
+            $.get('/article/delete/' + id, function (data) {
+                getArticleList();
+                if (data.status == 1) {
+                    layer.msg(data.msg);
+                } else {
+                    layer.msg(data.msg);
+                }
+            });
+        }, function () {
+        });
+    }
+
+    function editArticle(id) {
+        $.get('/article/get/' + id, function (data) {
+            if (data.status == 1) {
+                var article = data.result;
+                $('#article-id').val(article._id);
+                $('#title').val(article.title);
+                $('#author').val(article.author);
+                $('#category_id').val(article.category);
+                $('#preview').html('<img src="/uploads/' + article.img + '">');
+                if (article.jing == 1) {
+                    $("input[name='is_jing']").get(0).checked = true;
+                } else {
+                    $("input[name='is_jing']").get(1).checked = true;
+                }
+                editor.txt.html(article.contents)
+                $("#list").hide();
+                $("#edit").show();
+            } else {
+                layer.msg(data.msg);
+            }
+        })
+    }
+
+    /**
+     * 更新文章
+     */
+    function updateArticle() {
+        var id = $('#article-id').val();
+        var title = $('#title').val();
+        var author = $('#author').val();
+        var category = $('#category_id').val();
+        var jing = $('input:radio[name="is_jing"]:checked').val();
+        var imgData = $('#article-img').val();
+        var suffix = $('#article-suffix').val();
+        var contents = editor.txt.html();
+        $.post('/article/update/' + id, {
+            title: title,
+            author: author,
+            category: category,
+            jing: jing,
+            imgData: imgData,
+            suffix: suffix,
+            contents: contents
+        }, function (data) {
+            if (data.status == 1) {
+                $("#edit").hide();
+                $("#list").show();
+                layer.msg(data.msg);
+                getArticleList();
+            } else {
+                layer.msg(data.msg);
+            }
+        });
+    }
+
+    /**
+     * 关闭文章
+     */
+    function closeEditArticle() {
+        $("#edit").hide();
+        $("#list").show();
+    }
+</script>
+</body>
+</html>

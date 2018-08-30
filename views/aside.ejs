@@ -1,0 +1,54 @@
+<!--侧边栏-->
+<aside class="sidebar  col-md-4">
+    <!-- 博主简介 -->
+    <div class="home-about excerpt-minic">
+        <div class="title">博主简介</div>
+        <div class="home-about-img">
+            <img src="<%= locals.user.avatar %>" alt=""></div>
+        <div class="home-about-text1">
+            <b><%= locals.user.nickname %></b>
+            <p><%= locals.user.position %></p>
+            <p><%= locals.user.other %></p>
+        </div>
+        <div class="home-about-text2">个人签名：<%= locals.user.signature %></div>
+    </div>
+    <!-- 精选文章 -->
+    <div class="home-selected excerpt-minic">
+        <div class="title">精选文章</div>
+        <ul>
+            <% for (let i = 0; i < locals.articleJing.length; i++) { %>
+            <li>
+                <% if(locals.articleJing[i].img) { %>
+                <img src="<%= locals.articleJing[i].img %>" class="img-responsive">
+                <% } %>
+                <h3><a href="/article/<%= locals.articleJing[i]._id %>"><%= locals.articleJing[i].title %></a></h3>
+                <p>
+                    <span><%= locals.articleJing[i].create_at %></span>
+                    <span>
+                        <i class="glyphicon glyphicon-heart"></i>
+                        <b>阅读：<%= locals.articleJing[i].view %></b>
+                    </span>
+                </p>
+            </li>
+            <% } %>
+        </ul>
+    </div>
+    <!-- 热门文章 -->
+    <div class="home-hot excerpt-minic">
+        <div class="title">热门文章</div>
+        <ul>
+            <% for (let i = 0; i < locals.articleHot.length; i++) { %>
+            <li>
+                <h3><a href="/article/<%= locals.articleHot[i]._id %>"><%= locals.articleHot[i].title %></a></h3>
+                <p>
+                    <span><%= locals.articleHot[i].create_at %></span>
+                    <span>
+                        <i class="glyphicon glyphicon-heart"></i>
+                        <b>阅读：<%= locals.articleHot[i].view %></b>
+                    </span>
+                </p>
+            </li>
+            <% } %>
+        </ul>
+    </div>
+</aside>

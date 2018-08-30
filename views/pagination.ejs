@@ -1,0 +1,18 @@
+<!--分页-->
+<% if(list.length == 0){ %>
+<div style="width: 100%; text-align: center;color: darkgray;">亲，这里还没有内容哦!</div>
+<% } %>
+<% if(totalPage > 1){ %>
+<div class="pagination my-pagination">
+    <% if(page > 1){ %>
+    <a class="btn btn-default btn-danger" style="border-radius: 0px;"
+       href="<%= locals.path %>?page=<%= parseInt(page) - 1 %>&searchVal=<%= locals.searchVal %>"><</a>
+    <% } %>
+    <div class="btn btn-default btn-danger" style="border-radius: 0px;">第 <%= page %> 页 / 共 <%= totalPage %>页
+    </div>
+    <% if(page < totalPage){ %>
+    <a class="btn btn-default btn-danger" style="border-radius: 0px;"
+       href="<%= locals.path %>?page=<%= parseInt(page) + 1 %>&searchVal=<%= locals.searchVal %>">></a>
+    <% } %>
+</div>
+<% } %>

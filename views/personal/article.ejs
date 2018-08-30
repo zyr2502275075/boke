@@ -1,0 +1,104 @@
+<!-- 文章管理 -->
+<div role="tabpanel" class="tab-pane fade" id="Section2">
+    <div class="pubboxw" id="list">
+        <div class="manage-search">
+            <div class="col-md-8">
+                <!--<div class="myselectType">-->
+                <!--<ul id="main_box">-->
+                <!--<li class="select_box"><span>全部</span>-->
+                <!--<ul class="son_ul">-->
+                <!--<li>标题</li>-->
+                <!--<li>关键字</li>-->
+                <!--</ul>-->
+                <!--</li>-->
+                <!--</ul>-->
+                <!--</div>-->
+                <input placeholder="搜索从这里开始..." type="text" id="keyword">
+                <button type="button" onclick="setKeyword()"></button>
+            </div>
+            <div class="col-md-4 mt20">
+                <div class='checkbox'>
+                    <input type='checkbox' id='checkbox1' onchange="jing(this)">
+                    <label for='checkbox1'>精选</label>
+                </div>
+
+            </div>
+        </div>
+        <ul class="manage-list1" id="articleList">
+        </ul>
+        <ul class="pagination my-pagination" id="page">
+        </ul>
+    </div>
+    <div class="pubbox" id="edit" style="display: none;">
+        <div class="row">
+            <div class="col-md-3">
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <div class="h4"></div>
+                        <div class="fileinput fileinput-new">
+                            <div class="fileinput-new thumbnail" id="preview"></div>
+                            <div> <span class="btn btn-primary btn-file my-file"> <span
+                                            class="fileinput-new">选择文件</span>
+                      <input type="file" onchange="preview(this)"/>
+                      </span></div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-9 my-form">
+                <form>
+                    <input type="hidden" id="article-id" value="">
+                    <input type="hidden" id="article-img" value="">
+                    <input type="hidden" id="article-suffix" value="">
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">标题</label>
+                        <input class="form-control" placeholder="请输入标题" type="text" id="title">
+                        <p class="tit-Prompt">请输入标题</p>
+                    </div>
+                    <div class="mb20">
+                        <div class="col-md-6">
+                            <label for="exampleInputPassword1">类型</label>
+                            <select class="form-control" id="category_id">
+                                <% for(var i = 0; i < personalCategoryList.length; i++) { %>
+                                <option value="<%= personalCategoryList[i]._id %>"><%= personalCategoryList[i].name %></option>
+                                <% } %>
+                            </select>
+                            <p class="tit-Prompt">请选择类型</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="exampleInputPassword1">原作者</label>
+                            <input class="form-control " placeholder="请输入原作者" type="text" id="author">
+                            <p class="tit-Prompt">请输入原作者</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">精华文章</label>
+                        <div class="col-md-6">
+                            <div class="radio-inline">
+                                <input class="magic-radio" type="radio" name="is_jing" id="r1" value="1">
+                                <label for="r1">是</label>
+                            </div>
+                            <div class="radio-inline">
+                                <input class="magic-radio" type="radio" name="is_jing" id="r2" value="0"
+                                       checked>
+                                <label for="r2">否</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+        <div class="row my-content">
+            <div class="form-group">
+                <label><b>文章正文</b> 在这里填写详细的文章内容分享给大家</label>
+                <div id="contents-div" style="background-color: white"></div>
+            </div>
+        </div>
+        <div class="my-button">
+            <button type="button" class="btn btn-danger" onclick="updateArticle()">立即保存</button>
+            <button type="button" class="btn btn-default" onclick="closeEditArticle()">返回列表</button>
+        </div>
+    </div>
+</div>

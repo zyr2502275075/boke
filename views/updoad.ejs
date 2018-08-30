@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <title>Document</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="file-loading">
+        <input id="input-702" name="kartik-input-702[]" type="file" multiple>
+
+</div>
+<script src="/js/jquery.min.js"></script><!--jquery-->
+<script src="/js/bootstrap.min.js"></script><!--bootstrap官方js-->
+<script src="/js/bootstrap-fileinput.js"></script><!--fileinput图片上传控件-->
+<script src="http://unpkg.com/wangeditor/release/wangEditor.min.js"></script>
+<script>
+    $(document).on("ready", function() {
+        $("#input-702").fileinput({
+            theme: 'fa',
+            uploadUrl: "/file-upload-batch/1",
+            uploadAsync: false,
+            minFileCount: 2,
+            maxFileCount: 5,
+            overwriteInitial: false,
+            initialPreview: [
+                "http://lorempixel.com/800/460/people/1",
+                "http://lorempixel.com/800/460/people/2"
+            ],
+            initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
+            initialPreviewFileType: 'image', // image is the default and can be overridden in config below
+            initialPreviewConfig: [
+                {caption: "People-1.jpg", size: 576237, width: "120px", url: "/site/file-delete", key: 1},
+                {caption: "People-2.jpg", size: 932882, width: "120px", url: "/site/file-delete", key: 2},
+            ],
+            uploadExtraData: {
+                img_key: "1000",
+                img_keywords: "happy, places",
+            }
+        }).on('filesorted', function(e, params) {
+            console.log('file sorted', e, params);
+        }).on('fileuploaded', function(e, params) {
+            console.log('file uploaded', e, params);
+        });
+    });
+</script>
+</body>
+</html>

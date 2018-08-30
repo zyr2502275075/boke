@@ -1,0 +1,84 @@
+<!-- 基本资料 -->
+<div role="tabpanel" class="tab-pane fade in active" id="Section1">
+    <form action="/users/personal" method="post" enctype="multipart/form-data">
+        <div class="my-information">
+            <div class="col-md-9">
+                <h3>基本资料 －<span>修改你的基本资料，将显示在首页博主简介中，并可以让更多的朋友了解和认识你！</span></h3>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">昵称：</label>
+                    <input class="form-control" id="nickname" name="nickname" value="<%= user.nickname %>"
+                           placeholder="他是显示在首页的名字"
+                           type="text">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">个性签名：</label>
+                    <input class="form-control" id="signature" name="signature"
+                           value="<%= user.signature %>" placeholder="你的设计感悟或者一句话介绍" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">职位：</label>
+                    <input class="form-control" id="position" name="position" value="<%= user.position %>"
+                           placeholder="曾经担任过或现任的职位" type="text">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">社交账号：</label>
+                    <input class="form-control" id="other" name="other" value="<%= user.other %>"
+                           placeholder=" 大家可以通过更多的渠道关注你。" type="text">
+                </div>
+                <div class="bs-example text-center" data-example-id="btn-variants">
+                    <button type="button" class="btn btn-danger" onclick="update()">保存信息</button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="fileinput fileinput-new">
+                        <div class="fileinput-new thumbnail" id="preview2">
+                            <img src="<%= user.avatar %>" alt="">
+                        </div>
+                        <input type="hidden" value="" id="user-img">
+                        <input type="hidden" value="" id="user-suffix">
+                        <div>
+                            <span class="btn btn-primary btn-file my-file">
+                                <span class="fileinput-new">选择文件</span>
+                                <input type="file" onchange="preview2(this)" name="img"/>
+                            </span>
+                        </div>
+                        <div class="btn btn-danger"  style="width: 100%; text-align: center; margin-top: 10px;">
+                            <a style="color: white;" href="#" data-toggle="modal" data-target="#password">修改密码</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- passwordModal -->
+    <div class="modal fade" id="password" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">原密码：</label>
+                        <input class="form-control" id="old-password" placeholder=" 请输入原密码" type="password">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">新密码：</label>
+                        <input class="form-control" id="new-password" placeholder=" 长度为6-16字符" type="password">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">确认新密码：</label>
+                        <input class="form-control" id="confirm-password" placeholder=" 长度为6-16字符" type="password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" onclick="updatePwd()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

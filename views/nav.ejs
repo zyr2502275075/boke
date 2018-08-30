@@ -1,0 +1,49 @@
+<!--导航开始 -->
+<nav class="navbar navbar-default My-navbar" role="navigation">
+    <div class="container">
+        <!--手机导航显示 -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <!-- 导航主体 -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav navbar-left">
+                <% for(let i = 0; i < locals.category.length; i++){ %>
+                <li class="<%= locals.path == locals.category[i].path ? 'active' : '' %>">
+                    <a href="<%= locals.category[i].path %>"><%= locals.category[i].name %></a></li>
+                <% } %>
+            </ul>
+            <div class="Release-link navbar-right">
+                <% if(locals.loginUser) { %>
+                <a class="btn btn-default btn-danger" style="border-radius: 0px;" href="/users/logout">
+                    登出
+                </a>
+                <% } else { %>
+                <a class="btn btn-default btn-danger" style="border-radius: 0px;" href="/users/login">
+                    登录
+                </a>
+                <% } %>
+            </div>
+            <!-- 搜索 -->
+            <form class="navbar-form navbar-right My-search" method="get" action="/">
+                <div class="form-group">
+                    <input class="form-control" placeholder="填写查询内容" type="text" name="searchVal"
+                           value="<%= locals.searchVal %>">
+                </div>
+                <button type="submit" class="btn btn-default">搜索</button>
+            </form>
+            <!-- 发布按钮 -->
+            <div class="Release-link navbar-right">
+                <a class="btn btn-default btn-danger" style="border-radius: 0px;" href="/article/add">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>发布文章
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+<!--导航结束 -->

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>我的博客文章内页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!--width=device-width, initial-scale=1适当的绘制和触屏缩放;user-scalable=no禁用缩放-->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <!--bootstrap官方样式-->
+    <link rel="stylesheet" href="/css/normalize.css">
+    <!--强跨浏览器表现的一致性css 重置样式-->
+    <link rel="stylesheet" href="/css/main.css">
+    <!--自用样式-->
+</head>
+
+<body>
+
+<!-- 头部区域 -->
+<%- include('header') %>
+
+<!-- 导航区域 -->
+<%- include('nav') %>
+
+<!-- 主体 -->
+<section class="container">
+
+    <!-- 摘录1 -->
+    <article class=" col-md-8">
+        <div class="Articles">
+            <div class="excerpt-minic ">
+                <div class="Articles-tit">
+                    <h3><%= article.title %></h3>
+                    <span>作者：<b><%= article.author %></b>• <%= article.create_at %></span></div>
+                <div class="Articles-box">
+                    <img src="<%= article.img %>" class="img-responsive">
+                    <%- article.contents %>
+                </div>
+            </div>
+        </div>
+        </div>
+    </article>
+    <!-- 侧边栏 -->
+    <%- include('aside') %>
+</section>
+
+<!-- footer区域 -->
+<%- include('footer') %>
+
+<script src="/js/jquery.min.js"></script><!--jquery-->
+<script src="/js/bootstrap.min.js"></script><!--bootstrap官方js-->
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>我的博客发布文章</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!--width=device-width, initial-scale=1适当的绘制和触屏缩放;user-scalable=no禁用缩放-->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <!--bootstrap官方样式-->
+    <link rel="stylesheet" href="/css/normalize.css">
+    <!--强跨浏览器表现的一致性css 重置样式-->
+    <link rel="stylesheet" href="/css/main.css">
+    <!--自用样式-->
+</head>
+
+<body>
+
+<!-- 头部区域 -->
+<%- include('header') %>
+
+<!-- 导航区域 -->
+<%- include('nav') %>
+
+<!-- 主体 -->
+<section class="container ">
+    <form action="/article/save" method="post" enctype="multipart/form-data" onsubmit="return checkForm();">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="uploadForm">
+                    <div class="form-group">
+                        <div class="h4"><span class="glyphicon glyphicon-user"></span><%=user.nickname%></div>
+                        <div class="fileinput fileinput-new">
+                            <div class="fileinput-new thumbnail" id="preview"></div>
+                            <div>
+                            <span class="btn btn-primary btn-file my-file">
+                                <span class="fileinput-new">选择文件</span>
+                                 <input type="file" onchange="preview(this)" name="img"/>
+                            </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 my-form">
+
+                <div class="form-group">
+                    <label for="exampleInputPassword1">标题</label>
+                    <input class="form-control" placeholder="请输入标题" type="text" name="title" id="title">
+                    <p class="tit-Prompt" id="title-msg"></p>
+                </div>
+                <div class="mb20">
+                    <div class="col-md-6">
+                        <label for="exampleInputPassword1">文章分类</label>
+                        <select class="form-control" name="category">
+                            <% for(let i = 0; i < categoryList.length; i++){ %>
+                            <option value="<%= categoryList[i].id %>"><%= categoryList[i].name %></option>
+                            <% } %>
+                        </select>
+                        <p class="tit-Prompt"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="exampleInputPassword1">原作者</label>
+                        <input class="form-control " placeholder="请输入原作者" type="text" name="author" id="author">
+                        <p class="tit-Prompt" id="author-msg"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">精华文章</label>
+                    <div class="col-md-6">
+                        <div class="radio-inline">
+                            <input class="magic-radio" type="radio" name="jing" id="r1" value="1">
+                            <label for="r1">是</label>
+                        </div>
+                        <div class="radio-inline">
+                            <input class="magic-radio" type="radio" name="jing" id="r2" value="0" checked>
+                            <label for="r2">否</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-content">
+            <div class="form-group">
+                <label><b>文章正文</b> 在这里填写详细的文章内容分享给大家</label>
+                <textarea class="form-control" rows="3" id="contents-textarea" style="display: none"
+                          name="contents"></textarea>
+            </div>
+            <div id="contents-div" style="background-color: white"></div>
+        </div>
+        <br>
+        <div class="my-button">
+            <button type="submit" class="btn btn-danger">立即发布</button>
+        </div>
+    </form>
+</section>
+
+<!-- footer区域 -->
+<%- include('footer') %>
+
+<script src="/js/jquery.min.js"></script><!--jquery-->
+<script src="/js/bootstrap.min.js"></script><!--bootstrap官方js-->
+<script src="http://unpkg.com/wangeditor/release/wangEditor.min.js"></script> <!--编辑器-->
+<script type="text/javascript">
+
+    function checkForm() {
+        //验证标题
+        var title = $("#title").val();
+        if (title == "") {
+            $("#title").focus();
+            $("#title-msg").html("标题不能为空！");
+            return false;
+        } else if (title.length > 30) {
+            $("#title").focus();
+            $("#title-msg").html("标题的长度不能大于30！");
+            return false;
+        }
+        //验证作者
+        var author = $("#author").val();
+        if (author == "") {
+            $("#author").focus();
+            $("#author-msg").html("作者不能为空！");
+            return false;
+        } else if (author.length > 30) {
+            $("#author").focus();
+            $("#author-msg").html("作者的长度不能大于10！");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 初始化编辑器
+     */
+    var E = window.wangEditor
+    var editor = new E('#contents-div')
+    var contents = $('#contents-textarea')
+    editor.customConfig.uploadImgShowBase64 = true // 使用 base64 保存图片
+    editor.customConfig.onchange = function (html) {
+        contents.val(html)
+    }
+    editor.create()
+    contents.val(editor.txt.html())
+
+    //图片上传预览
+    function preview(file) {
+        var prevDiv = document.getElementById('preview');
+        if (file.files && file.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+                prevDiv.innerHTML = '<img src="' + evt.target.result + '" />';
+            }
+            reader.readAsDataURL(file.files[0]);
+        } else {
+            prevDiv.innerHTML = '<div class="img" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>';
+        }
+    }
+</script>
+</body>
+</html>
